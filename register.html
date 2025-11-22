@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - bsk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff1493 100%);
+            min-height: 100vh;
+        }
+
+        /* Логотип */
+        .logo {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b9d, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Контейнер регистрации */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 60px rgba(255, 20, 147, 0.3);
+            backdrop-filter: blur(15px);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .register-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b9d, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ff6b9d;
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input:hover {
+            border-color: #ff6b9d;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #ff1493;
+        }
+
+        /* Чекбокс */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 0.2rem;
+            accent-color: #ff1493;
+            transform: scale(1.2);
+        }
+
+        .checkbox-label {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: #ff1493;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Кнопка регистрации */
+        .register-button {
+            width: 100%;
+            background: linear-gradient(45deg, #ff6b9d, #ff1493);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff1493, #ff6b9d);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .register-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 20, 147, 0.6);
+        }
+
+        .register-button:hover::before {
+            left: 0;
+        }
+
+        .register-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Разделитель */
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+            color: #666;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Социальные кнопки */
+        .social-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .social-button:hover {
+            border-color: #ff6b9d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.2);
+        }
+
+        .social-button i {
+            font-size: 1.2rem;
+        }
+
+        .social-google {
+            color: #DB4437;
+        }
+
+        .social-vk {
+            color: #4C75A3;
+        }
+
+        /* Ссылка на вход */
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #ff1493;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Анимации */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Декоративные элементы */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 30px;
+            height: 30px;
+            top: 70%;
+            left: 85%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 25px;
+            height: 25px;
+            top: 80%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 1rem;
+            }
+
+            .register-card {
+                padding: 2rem;
+            }
+
+            .register-title {
+                font-size: 2rem;
+            }
+
+            .logo {
+                position: absolute;
+                top: 1.5rem;
+                left: 1.5rem;
+                font-size: 2rem;
+            }
+
+            .social-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 1.5rem;
+            }
+
+            .register-title {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Логотип -->
+    <a href="index.html" class="logo">bsk</a>
+
+    <!-- Контейнер регистрации -->
+    <div class="register-container">
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+
+        <div class="register-card">
+            <div class="register-header">
+                <h1 class="register-title">Регистрация</h1>
+                <p class="register-subtitle">Создайте аккаунт для начала обучения</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="name">Имя</label>
+                    <input type="text" id="name" class="form-input" placeholder="Введите ваше имя" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Пароль</label>
+                    <input type="password" id="password" class="form-input" placeholder="Создайте надежный пароль" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Подтвердите пароль</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Повторите пароль" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="agreement" required>
+                    <label class="checkbox-label" for="agreement">
+                        Я соглашаюсь с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="register-button">
+                    Создать аккаунт
+                    <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>или войдите через</span>
+            </div>
+
+            <div class="social-buttons">
+                <a href="#" class="social-button social-google">
+                    <i class="fab fa-google"></i>
+                    Google
+                </a>
+                <a href="#" class="social-button social-vk">
+                    <i class="fab fa-vk"></i>
+                    VK
+                </a>
+            </div>
+
+            <div class="login-link">
+                Уже есть аккаунт?
+                <a href="login.html">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Переключение видимости пароля
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = input.nextElementSibling.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Валидация формы
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const agreement = document.getElementById('agreement').checked;
+
+        // Проверка совпадения паролей
+        if (password !== confirmPassword) {
+            alert('Пароли не совпадают!');
+            return;
+        }
+
+        // Проверка согласия с условиями
+        if (!agreement) {
+            alert('Необходимо согласиться с условиями использования');
+            return;
+        }
+
+        // Проверка сложности пароля
+        if (password.length < 6) {
+            alert('Пароль должен содержать минимум 6 символов');
+            return;
+        }
+
+        // Имитация успешной регистрации
+        const button = this.querySelector('.register-button');
+        const originalText = button.innerHTML;
+        
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Регистрация...';
+        button.disabled = true;
+
+        setTimeout(() => {
+            alert('Регистрация успешно завершена! Добро пожаловать в bsk!');
+            button.innerHTML = originalText;
+            button.disabled = false;
+            this.reset();
+            // Сохраняем имя пользователя
+localStorage.setItem('userName', document.getElementById('name').value);
+            
+            // Перенаправление на страницу подробной регистрации
+            window.location.href = 'detailed-register.html';
+        }, 2000);
+    }); // ← Закрывающая скобка для addEventListener
+
+    // Анимация для логотипа
+    const logo = document.querySelector('.logo');
+    logo.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.05)';
+    });
+    
+    logo.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+    });
+
+    // Добавляем интерактивность полям ввода
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+</script>
