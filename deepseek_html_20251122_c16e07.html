@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Восстановление пароля</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f6df5 0%, #3a56d4 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #4f6df5;
+            box-shadow: 0 0 0 3px rgba(79, 109, 245, 0.2);
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4f6df5 0%, #3a56d4 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 109, 245, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .code-input:focus {
+            border-color: #4f6df5;
+        }
+
+        .timer {
+            text-align: center;
+            margin: 15px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .resend-link a {
+            color: #4f6df5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: #4f6df5;
+            transform: scale(1.2);
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            color: #4f6df5;
+            text-decoration: none;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .back-link svg {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Восстановление пароля</h1>
+            <p>Введите email для получения кода подтверждения</p>
+        </div>
+
+        <div class="form-container">
+            <div class="step-indicator">
+                <div class="step-dot active" id="step1-dot"></div>
+                <div class="step-dot" id="step2-dot"></div>
+                <div class="step-dot" id="step3-dot"></div>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                Код подтверждения отправлен на ваш email!
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Произошла ошибка. Попробуйте еще раз.
+            </div>
+
+            <!-- Шаг 1: Ввод email -->
+            <div class="step active" id="step1">
+                <div class="form-group">
+                    <label for="email">Email адрес</label>
+                    <input type="email" id="email" placeholder="example@mail.com" required>
+                </div>
+                <button class="btn" id="sendCodeBtn">Отправить код</button>
+            </div>
+
+            <!-- Шаг 2: Ввод кода подтверждения -->
+            <div class="step" id="step2">
+                <a href="#" class="back-link" id="backToStep1">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 12L6 8L10 4" stroke="#4f6df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Назад
+                </a>
+                <div class="form-group">
+                    <label for="code">Код подтверждения</label>
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" maxlength="1" data-index="0">
+                        <input type="text" class="code-input" maxlength="1" data-index="1">
+                        <input type="text" class="code-input" maxlength="1" data-index="2">
+                        <input type="text" class="code-input" maxlength="1" data-index="3">
+                        <input type="text" class="code-input" maxlength="1" data-index="4">
+                        <input type="text" class="code-input" maxlength="1" data-index="5">
+                    </div>
+                    <div class="timer" id="timer">Отправить код повторно через: 02:00</div>
+                    <div class="resend-link">
+                        <a href="#" id="resendCode">Отправить код повторно</a>
+                    </div>
+                </div>
+                <button class="btn" id="verifyCodeBtn">Подтвердить код</button>
+            </div>
+
+            <!-- Шаг 3: Установка нового пароля -->
+            <div class="step" id="step3">
+                <a href="#" class="back-link" id="backToStep2">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 12L6 8L10 4" stroke="#4f6df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Назад
+                </a>
+                <div class="form-group">
+                    <label for="newPassword">Новый пароль</label>
+                    <input type="password" id="newPassword" placeholder="Введите новый пароль" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Подтвердите пароль</label>
+                    <input type="password" id="confirmPassword" placeholder="Повторите новый пароль" required>
+                </div>
+                <button class="btn" id="resetPasswordBtn">Сменить пароль</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы DOM
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const step1Dot = document.getElementById('step1-dot');
+            const step2Dot = document.getElementById('step2-dot');
+            const step3Dot = document.getElementById('step3-dot');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+            const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+            const backToStep1 = document.getElementById('backToStep1');
+            const backToStep2 = document.getElementById('backToStep2');
+            const resendCode = document.getElementById('resendCode');
+            const timer = document.getElementById('timer');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const codeInputs = document.querySelectorAll('.code-input');
+            
+            let countdown;
+            let timeLeft = 120; // 2 минуты в секундах
+
+            // Переход к шагу 2: отправка кода
+            sendCodeBtn.addEventListener('click', function() {
+                const email = document.getElementById('email').value;
+                
+                if (!validateEmail(email)) {
+                    showError('Пожалуйста, введите корректный email адрес');
+                    return;
+                }
+                
+                // Имитация отправки кода на сервер
+                simulateSendCode(email);
+                
+                // Показать сообщение об успехе
+                showSuccess('Код подтверждения отправлен на ваш email!');
+                
+                // Переход к шагу 2
+                setTimeout(() => {
+                    step1.classList.remove('active');
+                    step2.classList.add('active');
+                    step1Dot.classList.remove('active');
+                    step2Dot.classList.add('active');
+                    successMessage.style.display = 'none';
+                    
+                    // Запуск таймера
+                    startTimer();
+                }, 1500);
+            });
+
+            // Подтверждение кода
+            verifyCodeBtn.addEventListener('click', function() {
+                const code = getCodeFromInputs();
+                
+                if (code.length !== 6) {
+                    showError('Пожалуйста, введите полный код подтверждения');
+                    return;
+                }
+                
+                // Имитация проверки кода на сервере
+                simulateVerifyCode(code);
+                
+                // Переход к шагу 3
+                step2.classList.remove('active');
+                step3.classList.add('active');
+                step2Dot.classList.remove('active');
+                step3Dot.classList.add('active');
+            });
+
+            // Смена пароля
+            resetPasswordBtn.addEventListener('click', function() {
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword.length < 6) {
+                    showError('Пароль должен содержать не менее 6 символов');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showError('Пароли не совпадают');
+                    return;
+                }
+                
+                // Имитация смены пароля на сервере
+                simulateResetPassword(newPassword);
+                
+                showSuccess('Пароль успешно изменен! Теперь вы можете войти в систему с новым паролем.');
+                
+                // Через 3 секунды перенаправить на страницу входа
+                setTimeout(() => {
+                    window.location.href = 'login.html'; // Замените на вашу страницу входа
+                }, 3000);
+            });
+
+            // Навигация назад
+            backToStep1.addEventListener('click', function(e) {
+                e.preventDefault();
+                step2.classList.remove('active');
+                step1.classList.add('active');
+                step2Dot.classList.remove('active');
+                step1Dot.classList.add('active');
+                clearInterval(countdown);
+            });
+
+            backToStep2.addEventListener('click', function(e) {
+                e.preventDefault();
+                step3.classList.remove('active');
+                step2.classList.add('active');
+                step3Dot.classList.remove('active');
+                step2Dot.classList.add('active');
+            });
+
+            // Повторная отправка кода
+            resendCode.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (resendCode.classList.contains('disabled')) {
+                    return;
+                }
+                
+                const email = document.getElementById('email').value;
+                simulateSendCode(email);
+                showSuccess('Код подтверждения отправлен повторно!');
+                
+                // Сброс и запуск таймера
+                clearInterval(countdown);
+                timeLeft = 120;
+                startTimer();
+            });
+
+            // Логика ввода кода подтверждения
+            codeInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const index = parseInt(this.dataset.index);
+                    
+                    if (this.value.length === 1 && index < 5) {
+                        codeInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    const index = parseInt(this.dataset.index);
+                    
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                });
+            });
+
+            // Функции
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function getCodeFromInputs() {
+                let code = '';
+                codeInputs.forEach(input => {
+                    code += input.value;
+                });
+                return code;
+            }
+
+            function startTimer() {
+                resendCode.classList.add('disabled');
+                resendCode.style.pointerEvents = 'none';
+                resendCode.style.opacity = '0.5';
+                
+                countdown = setInterval(() => {
+                    timeLeft--;
+                    
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    
+                    timer.textContent = `Отправить код повторно через: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        resendCode.classList.remove('disabled');
+                        resendCode.style.pointerEvents = 'auto';
+                        resendCode.style.opacity = '1';
+                        timer.textContent = 'Вы можете отправить код повторно';
+                    }
+                }, 1000);
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+
+            // Имитация API вызовов
+            function simulateSendCode(email) {
+                console.log(`Код отправлен на email: ${email}`);
+                // В реальном приложении здесь будет AJAX запрос к серверу
+            }
+
+            function simulateVerifyCode(code) {
+                console.log(`Проверка кода: ${code}`);
+                // В реальном приложении здесь будет AJAX запрос к серверу
+            }
+
+            function simulateResetPassword(password) {
+                console.log(`Пароль изменен на: ${password}`);
+                // В реальном приложении здесь будет AJAX запрос к серверу
+            }
+        });
+    </script>
+</body>
+</html>
